@@ -21,7 +21,7 @@ class SettingsActivity : AppCompatActivity() {
     private val outputDirLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == android.app.Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             result.data?.data?.let { setOutputDir(it) }
         }
     }
@@ -66,6 +66,6 @@ class SettingsActivity : AppCompatActivity() {
     private fun setOutputDir(uri: Uri) {
         analyzer.persistOutputDirUri(uri)
         analyzer.saveOutputDirPrefs(uri.toString(), uri.toString())
-        tvOutputDirStatus.text = "📂 ${uri.toString()}"
+        tvOutputDirStatus.text = "📂 $uri"
     }
 }

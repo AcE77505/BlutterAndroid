@@ -23,6 +23,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.core.net.toUri
 
 class MainActivity : AppCompatActivity() {
 
@@ -253,7 +254,7 @@ class MainActivity : AppCompatActivity() {
                         val qualityWarn = withContext(Dispatchers.IO) {
                             analyzer.detectUnreliableResult()
                         }
-                        if (qualityWarn != null) qualityWarn.split("\n").forEach { log(it) }
+                        qualityWarn?.split("\n")?.forEach { log(it) }
 
                         log("📦 正在打包输出...")
 
@@ -316,7 +317,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent.createChooser(
                 Intent(Intent.ACTION_SEND).apply {
                     type = "application/zip"
-                    putExtra(Intent.EXTRA_STREAM, Uri.parse(uriStr))
+                    putExtra(Intent.EXTRA_STREAM, uriStr.toUri())
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }, "分享分析结果"
             ))
