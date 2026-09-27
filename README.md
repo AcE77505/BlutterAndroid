@@ -1,9 +1,9 @@
 # BlutterAndroid — App 内集成 Blutter 的 Flutter 逆向工程工具
 
 一个 Android App：在设备本地对 Flutter 应用的 `libapp.so` 做逆向分析
-（反汇编 + 对象池 dump + Frida 脚本生成），支持 **Dart 2.14 ~ 3.13** 共 70 个版本。
+（反汇编 + 对象池 dump + Frida 脚本生成），支持 **Dart 2.14 ~ 3.13** 共 70 个版本。中间部分版本不支持，详细可以看**支持版本**一节。
 
-> 核心逆向引擎是 [blutter](https://github.com/worawit/blutter)（MIT）。
+> 核心逆向引擎是 [blutter](https://github.com/worawit/blutter)。
 > 本项目将其**交叉编译为 Android bionic 版 PIE 可执行文件**，以 `jniLibs` 形式集成进 App，
 > 由 App 在运行时 `execve` 调用（子进程设 `LD_LIBRARY_PATH`）。
 
@@ -14,7 +14,7 @@
 ## 特性
 
 - **安装即用**：预编译二进制随 App 分发，无需现场编译、无需 chroot / proot 容器，装好即用。
-- **全版本覆盖**：`libblutter_<版本>.so` 每版本一个，共 70 个（Dart 2.14.1 ~ 3.13.4）。
+- **版本覆盖较全**：`libblutter_<版本>.so` 每版本一个，共 70 个。
 - **无需 root**：产物放 `jniLibs/arm64-v8a/`，由 PackageManager 提取到可执行目录。
 - **跨平台构建**：Linux / Windows 同一套脚本，Windows 自动切换 NDK toolchain 与命令后缀。
 - **自包含**：Dart SDK 源码、静态库均按需拉取/构建，不进仓库。
