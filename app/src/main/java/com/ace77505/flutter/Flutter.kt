@@ -14,6 +14,10 @@ import java.util.zip.Deflater
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
+import androidx.core.content.edit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import androidx.core.net.toUri
 
 /**
  * Flutter 应用分析引擎。
@@ -22,7 +26,6 @@ import java.util.zip.ZipOutputStream
 class FlutterAnalyzer(private val context: Context) {
 
     companion object {
-        private const val TAG = "FlutterAnalyzer"
         private const val SP_NAME = "flutter_blutter_prefs"
         private const val KEY_OUTPUT_DIR_URI = "output_dir_uri"
         private const val KEY_OUTPUT_DIR_NAME = "output_dir_name"
@@ -63,26 +66,26 @@ class FlutterAnalyzer(private val context: Context) {
     // ── 写入持久化状态 ──────────────────────────────────────────────
 
     private fun save(key: String, value: String) {
-        prefs.edit().putString(key, value).apply()
+        prefs.edit { putString(key, value) }
     }
 
     fun saveInputPrefs(type: String, uri: String, fileName: String) {
-        prefs.edit()
-            .putString(KEY_INPUT_TYPE, type)
-            .putString(KEY_INPUT_URI, uri)
-            .putString(KEY_INPUT_FILE_NAME, fileName)
-            .apply()
+        prefs.edit {
+            putString(KEY_INPUT_TYPE, type)
+                .putString(KEY_INPUT_URI, uri)
+                .putString(KEY_INPUT_FILE_NAME, fileName)
+        }
     }
 
     fun saveOutputDirPrefs(uriStr: String, displayName: String) {
-        prefs.edit()
-            .putString(KEY_OUTPUT_DIR_URI, uriStr)
-            .putString(KEY_OUTPUT_DIR_NAME, displayName)
-            .apply()
+        prefs.edit {
+            putString(KEY_OUTPUT_DIR_URI, uriStr)
+                .putString(KEY_OUTPUT_DIR_NAME, displayName)
+        }
     }
 
     fun saveLastZipPrefs(uriStr: String) {
-        prefs.edit().putString(KEY_LAST_ZIP_URI, uriStr).apply()
+        prefs.edit { putString(KEY_LAST_ZIP_URI, uriStr) }
     }
 
     // ── ZIP 压缩 ───────────────────────────────────────────────────
@@ -91,13 +94,13 @@ class FlutterAnalyzer(private val context: Context) {
         prefs.getBoolean(KEY_ZIP_COMPRESSION, false)
 
     fun setZipCompression(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_ZIP_COMPRESSION, enabled).apply()
+        prefs.edit { putBoolean(KEY_ZIP_COMPRESSION, enabled) }
     }
 
     // ── 从 APK 提取 libapp.so ──────────────────────────────────────
 
     /** 从 APK 提取 libapp.so 和 libflutter.so */
-    suspend fun extractLibFromApk(uri: Uri): Boolean {
+    fun extractLibFromApk(uri: Uri): Boolean {
         val inputDir = File("$baseDir/input").also {
             it.mkdirs()
             it.listFiles()?.forEach { f -> f.delete() }
@@ -133,7 +136,7 @@ class FlutterAnalyzer(private val context: Context) {
     data class SoCandidate(val uri: Uri, val fileName: String)
 
     /** 列出 SAF 树目录下的 .so 文件，返回候选列表 */
-    suspend fun listSoCandidates(treeUri: Uri): List<SoCandidate> {
+    fun listSoCandidates(treeUri: Uri): List<SoCandidate> {
         val treeId = DocumentsContract.getTreeDocumentId(treeUri)
         val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(treeUri, treeId)
         val result = mutableListOf<SoCandidate>()
@@ -157,7 +160,7 @@ class FlutterAnalyzer(private val context: Context) {
     }
 
     /** 将 SAF 树目录中的 libapp.so 和 libflutter.so 复制到内部 input 目录 */
-    suspend fun copySoDirToInput(treeUri: Uri, soCandidates: List<SoCandidate>) {
+    fun copySoDirToInput(treeUri: Uri, soCandidates: List<SoCandidate>) {
         val inputDir = File("$baseDir/input").also {
             it.mkdirs()
             it.listFiles()?.forEach { f -> f.delete() }
@@ -193,11 +196,11 @@ class FlutterAnalyzer(private val context: Context) {
             Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         try {
             context.contentResolver.takePersistableUriPermission(uri, flags)
-            android.util.Log.i("FlutterAnalyzer", "takePersistableUriPermission OK for $uri")
+            Log.i("FlutterAnalyzer", "takePersistableUriPermission OK for $uri")
         } catch (e: Exception) {
             // 若系统本次未授予 PERSISTABLE（异常 ROM），授权无法持久化（仅本会话有效）。
             // 这里不 crash，目录 URI 仍会保存；重启后需重选。
-            android.util.Log.w("FlutterAnalyzer",
+            Log.w("FlutterAnalyzer",
                 "takePersistableUriPermission failed: $uri -> ${e.message}", e)
         }
     }
@@ -240,7 +243,7 @@ class FlutterAnalyzer(private val context: Context) {
             onLogLine("❌ 未找到 $binaryName")
             return 1
         }
-        onLogLine("🔍 Dart ${if (dartVer.isNotEmpty()) dartVer else verSafe} → $binaryName")
+        onLogLine("🔍 Dart ${dartVer.ifEmpty { verSafe }} → $binaryName")
 
         // bionic 动态版: 直接 execve（interpreter=/system/bin/linker64）
         // linker64 不自动搜索 nativeLibraryDir，需显式 LD_LIBRARY_PATH（仅影响 execve 的子进程）
@@ -249,11 +252,13 @@ class FlutterAnalyzer(private val context: Context) {
             .redirectErrorStream(true)
         process.environment()["LD_LIBRARY_PATH"] = nativeDir
 
-        val proc = process.start()
-        proc.inputStream.bufferedReader().use { reader ->
-            reader.forEachLine { line -> onLogLine(line) }
+        return withContext(Dispatchers.IO) {
+            val proc = process.start()
+            proc.inputStream.bufferedReader().use { reader ->
+                reader.forEachLine { line -> onLogLine(line) }
+            }
+            proc.waitFor()
         }
-        return proc.waitFor()
     }
 
     /** 检查运行条件是否满足 */
@@ -267,14 +272,14 @@ class FlutterAnalyzer(private val context: Context) {
     // ── 打包 + 导出 ZIP ────────────────────────────────────────────
 
     /** 打包 out/ 目录为无压缩 ZIP，写入 SAF 输出目录。返回 ZIP 文件名，失败返回 null */
-    suspend fun zipAndExport(): String? {
+    fun zipAndExport(): String? {
         val outDir = File("$baseDir/out")
         val files = outDir.listFiles() ?: emptyArray()
         if (files.isEmpty()) return null
 
         val treeUriStr = getOutputDirUri() ?: return null
         // 保留授权的原始编码 URI（含 %3A），切勿还原成 ":"。
-        val outputTreeUri = Uri.parse(treeUriStr)
+        val outputTreeUri = treeUriStr.toUri()
         // 官方要求:createDocument 的 parent 必须是 buildDocumentUriUsingTree 得到的
         // document URI(content://.../tree/<id>/document/<id>), 而不是裸 tree URI,
         // 否则 provider 报 Invalid URI。
@@ -290,7 +295,7 @@ class FlutterAnalyzer(private val context: Context) {
                 "application/zip", zipName
             )
         } catch (e: IllegalArgumentException) {
-            android.util.Log.w("FlutterAnalyzer", "createDocument failed for tree=${outputTreeUri} parent=${parentDocUri}: ${e.message}", e)
+            Log.w("FlutterAnalyzer", "createDocument failed for tree=${outputTreeUri} parent=${parentDocUri}: ${e.message}", e)
             throw IllegalStateException("输出目录不可写（${zipName}）：${e.message}。请到设置重新选择输出目录", e)
         } ?: return null
 
@@ -401,7 +406,7 @@ class FlutterAnalyzer(private val context: Context) {
                 val text = String(bytes, Charsets.ISO_8859_1)
                 val matcher = pattern.matcher(text)
                 if (matcher.find()) {
-                    return matcher.group(1)
+                    return matcher.group(1)!!
                 }
             } catch (_: Exception) { }
         }
