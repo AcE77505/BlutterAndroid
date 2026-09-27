@@ -1,0 +1,61 @@
+# ============================================================
+# FlutterAndroid — 开源仓库 .gitignore
+# 原则：只入库「源码 + 脚本 + 文档 + 构建元数据」，
+#       排除可重建产物、第三方 SDK 源码、本机配置与敏感文件。
+# ============================================================
+
+# ---------- 敏感 / 本机配置（绝不入库）----------
+local.properties
+signing.properties
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+
+# ---------- IDE / 工具 ----------
+.idea/
+*.iml
+.gradle/
+.kotlin/
+.reasonix/
+.tmp-dbg/
+caches/
+
+# ---------- Android / Gradle 构建产物 ----------
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+# App 内预编译 blutter 二进制（jniLibs/*.so）走 GitHub Release 分发，不入库
+app/src/main/jniLibs/
+
+# ---------- blutter：第三方源码 / 生成产物 ----------
+blutter/.xplat_backup/
+blutter/__pycache__/
+blutter/dartsdk/            # Dart SDK 源码，用 scripts/download_all_dart.sh 拉取
+blutter/packages/           # 生成的 dartvm 静态库（*.a）
+blutter/bin/                # 生成的 blutter 可执行文件
+blutter/tmp/
+blutter/out/
+blutter/external/
+# 各版本构建目录（约 70 个）
+blutter/blutter/build_bionic*/
+blutter/blutter/build_android*/
+# NDK 依赖构建产物（保留 *.py/*.sh 脚本与源码归档）
+blutter/ndk_out/*/
+blutter/ndk_src/capstone-4.0.2/
+blutter/ndk_src/glibc-2.35/
+blutter/ndk_src/icu/
+blutter/ndk_src/kernel_headers_pkg/
+blutter/ndk_src/glibc-2.35.tar.xz
+blutter/ndk_src/*.deb
+
+# ---------- 日志 / 编译产物 ----------
+*.log
+blutter/download_all.out
+*.a
+*.so
+*.dll
+*.lib
+*.o
