@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 ace77505
+Copyright (c) 2026 AcE77505
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,8 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-本仓库整合了多个第三方开源项目，各自的许可与版权归属见 THIRD_PARTY_NOTICES.md。
-其中 blutter/ 子目录源自 worawit/blutter（同样为 MIT），详见该文件。
