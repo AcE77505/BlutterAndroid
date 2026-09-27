@@ -48,6 +48,19 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
     }
+    // 指定 APK 输出文件名
+    applicationVariants.all {
+        val variant = this
+        variant.outputs
+            .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+            .forEach { output ->
+                val buildType = variant.buildType.name
+                val projectName = rootProject.name
+                val versionName = variant.versionName
+                output.outputFileName = "${projectName}-${buildType}-${versionName}.apk"
+            }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
