@@ -5,7 +5,7 @@
 #
 # 可用环境变量：
 #   NDK / ANDROID_NDK_HOME    Android NDK 根目录（默认自动探测）
-#   JNI_LIBS_DIR              输出目录，默认历史位置（FlutterAndroid/app/src/main/jniLibs/arm64-v8a）
+#   JNI_LIBS_DIR              输出目录，默认历史位置（BlutterAndroid/app/src/main/jniLibs/arm64-v8a）
 #   BLUTTER_BIN_DIR           47 个 binary 所在目录，默认 <blutter>/bin/bionic
 #   CAPSTONE_ROOT             capstone 安装前缀，默认 <blutter>/ndk_out/capstone-android-install
 #   ICU_SHARED_ROOT           ICU(共享) 安装前缀，默认 <blutter>/ndk_out/icu-android-shared-install

@@ -22,8 +22,8 @@ Blutter 用 **Android NDK 的 `android.toolchain` + bionic 运行时**交叉编�
 **全流程跨平台（Linux / Windows）**：脚本一份代码双平台，Windows 上自动切换
 `prebuilt/windows-x86_64` 与 `.cmd`/`.exe` 后缀，构建统一走 `cmake --build`。
 
-> **本项目位置**：下文 `<blutter>` 指 `FlutterAndroid/blutter/`（与本 `BLUTTER_ANDROID_BUILD.md` 同级）；
-> jniLibs 默认输出到 `FlutterAndroid/app/src/main/jniLibs/arm64-v8a/`。
+> **本项目位置**：下文 `<blutter>` 指 `BlutterAndroid/blutter/`（与本 `BLUTTER_ANDROID_BUILD.md` 同级）；
+> jniLibs 默认输出到 `BlutterAndroid/app/src/main/jniLibs/arm64-v8a/`。
 > Windows 上构建前设置 `NDK` 与 `CMAKE_GENERATOR=Ninja`，并把 SDK 的 `cmake/3.22.1/bin` 加入 `PATH`。
 
 ---

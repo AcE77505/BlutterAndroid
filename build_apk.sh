@@ -1,5 +1,5 @@
 #!/bin/bash
-# FlutterAndroid 一键构建 APK（x86 Linux，无需 Android Studio）
+# BlutterAndroid 一键构建 APK（x86 Linux，无需 Android Studio）
 # 用法: ./build_apk.sh [assembleRelease|assembleDebug]
 set -e
 cd "$(dirname "$0")"

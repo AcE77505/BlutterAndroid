@@ -1,4 +1,4 @@
-# FlutterAndroid Blutter 集成方案复盘
+# BlutterAndroid Blutter 集成方案复盘
 
 > **当前正式方案**：方案⑪ —— 内置 jniLibs bionic 动态版（NDK 交叉编译，Android linker64 原生加载）。
 > 47 个版本、SAF 输出目录一次性授权永久有效，真机（KKG-AN00/Android 10）已验证全流程：选择输入 →

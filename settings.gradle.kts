@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "FlutterAndroid"
+rootProject.name = "BlutterAndroid"
 include(":app")

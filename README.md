@@ -1,4 +1,4 @@
-# FlutterAndroid — App 内集成 Blutter 的 Flutter 逆向工程工具
+# BlutterAndroid — App 内集成 Blutter 的 Flutter 逆向工程工具
 
 一个 Android App：在设备本地对 Flutter 应用的 `libapp.so` 做逆向分析
 （反汇编 + 对象池 dump + Frida 脚本生成），支持 **Dart 2.14 ~ 3.13** 共 70 个版本。
@@ -17,7 +17,7 @@
 ## 目录结构
 
 ```
-FlutterAndroid/
+BlutterAndroid/
 ├── app/                       # Android App（Kotlin）
 │   └── src/main/java/com/ace77505/flutter/
 ├── blutter/                   # 逆向引擎（blutter fork + 构建脚本）
